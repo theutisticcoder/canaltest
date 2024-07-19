@@ -49,6 +49,7 @@ function handleMotion(e){
             acceleration.y * acceleration.y +
             acceleration.z * acceleration.z
         );
+        console.log(Math.abs(magnitude - previousMagnitude))
 
         if (Math.abs(magnitude - previousMagnitude) > threshold) {
             stepCount++;
