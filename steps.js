@@ -10,6 +10,21 @@ function alerter(){
     const stepnot = new Notification("Your steps are currently " + stepCount);
     setTimeout(alerter, 86400000);
 }
+async function notifyMe() {
+    if (!("Notification" in window)) {
+    } else if (Notification.permission !== "denied") {
+      // We need to ask the user for permission
+      Notification.requestPermission().then((permission) => {
+        // If the user accepts, let's create a notification
+        if (permission === "granted") {
+            alerter();
+        }
+      });
+    }
+  
+    // At last, if the user has denied notifications, and you
+    // want to be respectful there is no need to bother them anymore.
+  }
 if ('Accelerometer' in window) {
     try {
         const accelerometer = new Accelerometer({ frequency: 20 });
@@ -28,26 +43,12 @@ if ('Accelerometer' in window) {
                 document.getElementById('steps').textContent = stepCount;
                 localStorage.setItem("steps", stepCount)
             }
-
+            
             previousMagnitude = magnitude;
         });
-
+        notifyMe();
         accelerometer.start();
-        async function notifyMe() {
-            if (!("Notification" in window)) {
-            } else if (Notification.permission !== "denied") {
-              // We need to ask the user for permission
-              Notification.requestPermission().then((permission) => {
-                // If the user accepts, let's create a notification
-                if (permission === "granted") {
-                    alerter();
-                }
-              });
-            }
-          
-            // At last, if the user has denied notifications, and you
-            // want to be respectful there is no need to bother them anymore.
-          }
+       
     } catch (error) {
         console.error('Accelerometer not supported:', error);
         document.getElementById('steps').textContent = 'Accelerometer not supported.';
