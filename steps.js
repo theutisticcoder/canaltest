@@ -61,5 +61,4 @@ function handleMotion(e){
         previousMagnitude = magnitude;
     };
     notifyMe();
-    accelerometer.start();
 }
