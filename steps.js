@@ -30,14 +30,14 @@ async function notifyMe() {
         DeviceMotionEvent.requestPermission()
             .then(permissionState => {
                 if (permissionState === 'granted') {
-                    document.addEventListener('devicemotion', handleMotion);
+                    window.addEventListener('devicemotion', handleMotion);
                 } else {
                     alert('Permission to access motion sensors was denied.');
                 }
             })
             .catch(console.error);
     } else {
-        document.addEventListener('devicemotion', handleMotion);
+        window.addEventListener('devicemotion', handleMotion);
     }
 });
 
