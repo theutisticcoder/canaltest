@@ -25,15 +25,16 @@ async function notifyMe() {
     // At last, if the user has denied notifications, and you
     // want to be respectful there is no need to bother them anymore.
   }
-if ('Accelerometer' in window) {
     try {
-        const accelerometer = new Accelerometer({ frequency: 20 });
+            window.ondevicemotion = (e)=> {
 
-        accelerometer.addEventListener('reading', () => {
+            }
+        const acceleration = e.accelerationIncludingGravity;
+        if (acceleration.x !== null && acceleration.y !== null && acceleration.z !== null) {
             const magnitude = Math.sqrt(
-                accelerometer.x * accelerometer.x +
-                accelerometer.y * accelerometer.y +
-                accelerometer.z * accelerometer.z
+                acceleration.x * acceleration.x +
+                acceleration.y * acceleration.y +
+                acceleration.z * acceleration.z
             );
 
             if (Math.abs(magnitude - previousMagnitude) > threshold) {
@@ -53,7 +54,4 @@ if ('Accelerometer' in window) {
         console.error('Accelerometer not supported:', error);
         document.getElementById('steps').textContent = 'Accelerometer not supported.';
     }
-} else {
-    document.getElementById('steps').textContent = 'Accelerometer not supported on this device.';
-}
 
