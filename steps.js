@@ -46,7 +46,7 @@ async function notifyMe() {
             }
             
             previousMagnitude = magnitude;
-        });
+        };
         notifyMe();
         accelerometer.start();
        
