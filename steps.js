@@ -26,9 +26,9 @@ async function notifyMe() {
     // want to be respectful there is no need to bother them anymore.
   }
     try {
-            window.ondevicemotion = (e)=> {
+            document.ondevicemotion = (e)=> {
 
-            }
+            
         const acceleration = e.accelerationIncludingGravity;
         if (acceleration.x !== null && acceleration.y !== null && acceleration.z !== null) {
             const magnitude = Math.sqrt(
@@ -49,7 +49,7 @@ async function notifyMe() {
         };
         notifyMe();
         accelerometer.start();
-       
+    }
     } catch (error) {
         console.error('Accelerometer not supported:', error);
         document.getElementById('steps').textContent = 'Accelerometer not supported.';
