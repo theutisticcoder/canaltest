@@ -25,33 +25,41 @@ async function notifyMe() {
     // At last, if the user has denied notifications, and you
     // want to be respectful there is no need to bother them anymore.
   }
-    try {
-            document.ondevicemotion = (e)=> {
-DeviceOrientationEvent.requestPermission();
-            
-        const acceleration = e.accelerationIncludingGravity;
-        if (acceleration.x !== null && acceleration.y !== null && acceleration.z !== null) {
-            const magnitude = Math.sqrt(
-                acceleration.x * acceleration.x +
-                acceleration.y * acceleration.y +
-                acceleration.z * acceleration.z
-            );
-
-            if (Math.abs(magnitude - previousMagnitude) > threshold) {
-                stepCount++;
-                document.querySelector("progress").value = steps;
-                if(document.querySelector("progress").value >= 410549){ const finished = new Notification("You walked the canal!")}
-                document.getElementById('steps').textContent = stepCount;
-                localStorage.setItem("steps", stepCount)
-            }
-            
-            previousMagnitude = magnitude;
-        };
-        notifyMe();
-        accelerometer.start();
+  document.getElementById('start').addEventListener('click', () => {
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(permissionState => {
+                if (permissionState === 'granted') {
+                    window.addEventListener('devicemotion', handleMotion);
+                } else {
+                    alert('Permission to access motion sensors was denied.');
+                }
+            })
+            .catch(console.error);
+    } else {
+        window.addEventListener('devicemotion', handleMotion);
     }
-    } catch (error) {
-        console.error('Accelerometer not supported:', error);
-        document.getElementById('steps').textContent = 'Accelerometer not supported.';
-    }
+});
 
+function handleMotion(e){
+    const acceleration = e.accelerationIncludingGravity;
+    if (acceleration.x !== null && acceleration.y !== null && acceleration.z !== null) {
+        const magnitude = Math.sqrt(
+            acceleration.x * acceleration.x +
+            acceleration.y * acceleration.y +
+            acceleration.z * acceleration.z
+        );
+
+        if (Math.abs(magnitude - previousMagnitude) > threshold) {
+            stepCount++;
+            document.querySelector("progress").value = steps;
+            if(document.querySelector("progress").value >= 410549){ const finished = new Notification("You walked the canal!")}
+            document.getElementById('steps').textContent = stepCount;
+            localStorage.setItem("steps", stepCount)
+        }
+        
+        previousMagnitude = magnitude;
+    };
+    notifyMe();
+    accelerometer.start();
+}
