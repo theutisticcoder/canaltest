@@ -26,7 +26,7 @@ if ('Accelerometer' in window) {
                 document.querySelector("progress").value = steps;
                 if(document.querySelector("progress").value >= 410549){ const finished = new Notification("You walked the canal!")}
                 document.getElementById('steps').textContent = stepCount;
-                localStorage.setItem("steps", stepCount)j
+                localStorage.setItem("steps", stepCount)
             }
 
             previousMagnitude = magnitude;
