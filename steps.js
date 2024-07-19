@@ -27,7 +27,7 @@ async function notifyMe() {
   }
     try {
             document.ondevicemotion = (e)=> {
-
+DeviceOrientationEvent.requestPermission();
             
         const acceleration = e.accelerationIncludingGravity;
         if (acceleration.x !== null && acceleration.y !== null && acceleration.z !== null) {
