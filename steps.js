@@ -8,7 +8,7 @@ else{
      stepCount = 0;
 
 }
-let threshold = 12; // Adjust this value based on sensitivity
+let threshold = 1; // Adjust this value based on sensitivity
 let previousMagnitude = 0;
 function alerter(){
     const stepnot = new Notification("Your steps are currently " + stepCount);
@@ -37,7 +37,7 @@ async function notifyMe() {
                     window.addEventListener('devicemotion', (e)=> {
                         setTimeout(()=> {
                             handleMotion(e)
-                        }, 200)
+                        }, 500)
                     });
                 } else {
                     alert('Permission to access motion sensors was denied.');
@@ -48,7 +48,7 @@ async function notifyMe() {
         window.addEventListener('devicemotion', (e)=> {
             setTimeout(()=> {
                 handleMotion(e)
-            }, 200)
+            }, 500)
         });
     }
 });
