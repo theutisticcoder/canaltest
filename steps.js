@@ -8,7 +8,7 @@ else{
      stepCount = 0;
 
 }
-let threshold = 1; // Adjust this value based on sensitivity
+let threshold = 2; // Adjust this value based on sensitivity
 let previousMagnitude = 0;
 function alerter(){
     const stepnot = new Notification("Your steps are currently " + stepCount);
@@ -67,7 +67,8 @@ function handleMotion(e){
             stepCount++;
             document.querySelector("progress").value = stepCount;
             if(stepCount >= 410549){ const finished = new Notification("You walked the canal!")}
-            document.getElementById('steps').textContent = stepCount;
+            document.getElementById('steps').textContent = stepCount * 0.0004494382;
+            document.getElementById('km').textContent = stepCount * 0.00073099415;
             localStorage.setItem("steps", stepCount)
         }
         
