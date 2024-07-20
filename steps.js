@@ -1,6 +1,6 @@
 var stepCount = 0;
 
-if(localStorage.getItem("steps") != null){
+if(localStorage.getItem("steps") !== null){
      stepCount = localStorage.getItem("steps");
 
 }
