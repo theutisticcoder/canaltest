@@ -1,7 +1,11 @@
-var stepCount = 0;
 
+var stepCount;
 if(localStorage.getItem("steps") !== null){
      stepCount = localStorage.getItem("steps");
+
+}
+else{
+     stepCount = 0;
 
 }
 let threshold = 2; // Adjust this value based on sensitivity
