@@ -4,7 +4,7 @@ if(localStorage.getItem("steps") !== null){
      stepCount = localStorage.getItem("steps");
 
 }
-let threshold = 1; // Adjust this value based on sensitivity
+let threshold = 2; // Adjust this value based on sensitivity
 let previousMagnitude = 0;
 function alerter(){
     const stepnot = new Notification("Your steps are currently " + stepCount);
@@ -37,7 +37,9 @@ async function notifyMe() {
             })
             .catch(console.error);
     } else {
-        window.addEventListener('devicemotion', handleMotion);
+        window.addEventListener('devicemotion', ()=> {
+            setTimeout(handleMotion(), 200)
+        });
     }
 });
 
