@@ -1,6 +1,6 @@
 
 var stepCount;
-if(localStorage.getItem("steps") !== null){
+if(localStorage.getItem("steps")){
      stepCount = localStorage.getItem("steps");
 
 }
@@ -8,7 +8,7 @@ else{
      stepCount = 0;
 
 }
-let threshold = 2; // Adjust this value based on sensitivity
+let threshold = 3; // Adjust this value based on sensitivity
 let previousMagnitude = 0;
 function alerter(){
     const stepnot = new Notification("Your steps are currently " + stepCount);
@@ -61,9 +61,9 @@ function handleMotion(e){
             acceleration.y * acceleration.y +
             acceleration.z * acceleration.z
         );
-        console.log(Math.ceil(Math.abs(magnitude - previousMagnitude)))
+        console.log(Math.abs(magnitude - previousMagnitude))
 
-        if (Math.ceil(Math.abs(magnitude - previousMagnitude)) > threshold) {
+        if (Math.abs(magnitude - previousMagnitude) > threshold) {
             stepCount++;
             document.querySelector("progress").value = stepCount;
             if(stepCount >= 410549){ const finished = new Notification("You walked the canal!")}
