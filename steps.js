@@ -54,7 +54,7 @@ function handleMotion(e){
         if (Math.floor(Math.abs(magnitude - previousMagnitude)) > threshold) {
             stepCount++;
             document.querySelector("progress").value = steps;
-            if(document.querySelector("progress").value >= 410549){ const finished = new Notification("You walked the canal!")}
+            if(steps >= 410549){ const finished = new Notification("You walked the canal!")}
             document.getElementById('steps').textContent = stepCount;
             localStorage.setItem("steps", stepCount)
         }
