@@ -393,7 +393,7 @@
 
                 if (isTtsEnabled) {
                     var isSpeaking = false;
-                    const sentences = text.match(/[^.!?]+[.!?]*\s*/g) || [];
+                    const sentences = newChapter.match(/[^.!?]+[.!?]*\s*/g) || [];
 
                     isSpeaking = true;
 
@@ -410,7 +410,10 @@
                             if (trimmedSentence) {
                                 console.log("Speaking:", trimmedSentence);
                                 // 2. 'await' pauses the loop until this sentence is done speaking
-                                await puter.ai.tts.speak(trimmedSentence);
+                                await puter.ai.txt2speech(trimmedSentence).then(audio=> {
+                                    audio.play();
+                                    console.log(audio)
+                                });
                             }
                         }
                     } catch (error) {
