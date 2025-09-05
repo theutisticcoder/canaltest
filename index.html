@@ -368,7 +368,10 @@
                 journeyState.storyHistory.push(newChapter);
                 
                 if (isTtsEnabled) {
-                    puter.ai.txt2speech(newChapter);
+                    puter.ai.txt2speech(newChapter)Puter.js.")
+    .then((audio) => {
+        audio.play();
+    });
                 }
 
                 saveJourneyToStorage();
