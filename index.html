@@ -388,7 +388,7 @@
 
                 if (isTtsEnabled) {
                     var utterance = new SpeechSynthesisUtterance(newChapter);
-                    utterance.voice = "Google US English";
+                    utterance.voice = speechSynthesis.getVoices().filter(v=>v.name === "Google US English")[0];
                     speechSynthesis.speak(utterance);
                 }
 
