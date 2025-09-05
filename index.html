@@ -368,7 +368,7 @@
                 journeyState.storyHistory.push(newChapter);
                 
                 if (isTtsEnabled) {
-                    puter.ai.say(newChapter);
+                    puter.ai.txt2speech(newChapter);
                 }
 
                 saveJourneyToStorage();
