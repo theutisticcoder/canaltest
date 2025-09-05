@@ -335,7 +335,7 @@
             isTtsEnabled = !isTtsEnabled;
             localStorage.setItem('isTtsEnabled', isTtsEnabled);
             if (!isTtsEnabled) {
-                speechSynthesis.stop();
+                speechSynthesis.cancel();
             }
             updateUI();
         }
