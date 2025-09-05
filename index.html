@@ -390,42 +390,8 @@
                 const data = await response.json();
                 const newChapter = data.candidates[0].content.parts[0].text;
                 journeyState.storyHistory.push(newChapter);
-
-                if (isTtsEnabled) {
-                    var isSpeaking = false;
-                    const sentences = newChapter.match(/[^.!?]+[.!?]*\s*/g) || [];
-
-                    isSpeaking = true;
-
-                    try {
-                        // Loop through each sentence in the array
-                        for (const sentence of sentences) {
-                            // If speaking was cancelled, break out of the loop
-                            if (!isSpeaking) {
-                                console.log("Speech cancelled.");
-                                break;
-                            }
-
-                            const trimmedSentence = sentence.trim();
-                            if (trimmedSentence) {
-                                console.log("Speaking:", trimmedSentence);
-                                // 2. 'await' pauses the loop until this sentence is done speaking
-                                await puter.ai.txt2speech(trimmedSentence).then(audio=> {
-                                    audio.play();
-                                    console.log(audio)
-                                });
-                            }
-                        }
-                    } catch (error) {
-                        console.error("An error occurred during speech:", error);
-                    } finally {
-                        // Reset the flag when done or if an error occurs
-                        isSpeaking = false;
-                        console.log("Finished speaking.");
-                    }
-
-
-            }
+voicestory(newChapter, 0)
+              
 
                 saveJourneyToStorage();
             renderStory();
@@ -435,6 +401,27 @@
             statusMessage.textContent = "Couldn't generate story. Check API key.";
             setTimeout(() => { statusMessage.textContent = '' }, 4000);
         }
+        }
+        async function voicestory(newChapter, num){
+              if (isTtsEnabled) {
+                    const sentences = newChapter.match(/[^.!?]+[.!?]*\s*/g) || [];
+                const sentence = sentences[num]
+                            const trimmedSentence = sentence.trim();
+                            if (trimmedSentence) {
+                                console.log("Speaking:", trimmedSentence);
+                                // 2. 'await' pauses the loop until this sentence is done speaking
+                                await puter.ai.txt2speech(trimmedSentence).then(audio=> {
+                                    audio.play();
+                                    audio.onend = ()=> {
+                                        num++;
+                                        if(num < sentences.length){
+                                            voicestory(newChapter, num);
+                                        }
+                                    }
+                                    console.log(audio)
+                                });
+                            }
+            }
         }
     </script>
 </body>
