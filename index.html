@@ -392,22 +392,46 @@
                 journeyState.storyHistory.push(newChapter);
 
                 if (isTtsEnabled) {
-                    var strings = splitStringByLength(newChapter, 2500);
-                    strings.forEach(str => {
-                        puter.ai.txt2speech(str).then(audio=> {
-                            audio.play();
-                        })
-                    })
-                }
+                    var isSpeaking = false;
+                    const sentences = text.match(/[^.!?]+[.!?]*\s*/g) || [];
+
+                    isSpeaking = true;
+
+                    try {
+                        // Loop through each sentence in the array
+                        for (const sentence of sentences) {
+                            // If speaking was cancelled, break out of the loop
+                            if (!isSpeaking) {
+                                console.log("Speech cancelled.");
+                                break;
+                            }
+
+                            const trimmedSentence = sentence.trim();
+                            if (trimmedSentence) {
+                                console.log("Speaking:", trimmedSentence);
+                                // 2. 'await' pauses the loop until this sentence is done speaking
+                                await puter.ai.tts.speak(trimmedSentence);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("An error occurred during speech:", error);
+                    } finally {
+                        // Reset the flag when done or if an error occurs
+                        isSpeaking = false;
+                        console.log("Finished speaking.");
+                    }
+
+
+            }
 
                 saveJourneyToStorage();
-                renderStory();
+            renderStory();
 
-            } catch (error) {
-                console.error('Error fetching story:', error);
-                statusMessage.textContent = "Couldn't generate story. Check API key.";
-                setTimeout(() => { statusMessage.textContent = '' }, 4000);
-            }
+        } catch (error) {
+            console.error('Error fetching story:', error);
+            statusMessage.textContent = "Couldn't generate story. Check API key.";
+            setTimeout(() => { statusMessage.textContent = '' }, 4000);
+        }
         }
     </script>
 </body>
