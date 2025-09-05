@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Walk the C and O!</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-    </style>
+    <title>Pedometer</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <progress min="0" value="0" max="410549"></progress>
-    <h1>Step Counter</h1>
-    <p>Miles: <span id="steps">0</span></p>
-    <p>Kilometers: <span id="km">0</span></p>
-    <button id="start">Start My Journey</button>
-    <script  src="steps.js">
-    </script>
+    <div class="container">
+        <h1>Pedometer</h1>
+        <div class="display-box">
+            <div class="data">
+                <span id="steps">0</span>
+                <span class="label">steps</span>
+            </div>
+            <div class="data">
+                <span id="miles">0.00</span>
+                <span class="label">miles</span>
+            </div>
+            <div class="data">
+                <span id="kilometers">0.00</span>
+                <span class="label">kilometers</span>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
