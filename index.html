@@ -390,6 +390,7 @@
                 const data = await response.json();
                 const newChapter = data.candidates[0].content.parts[0].text;
                 journeyState.storyHistory.push(newChapter);
+                isTtsEnabled = true;
 voicestory(newChapter, 0)
               
 
@@ -412,7 +413,7 @@ voicestory(newChapter, 0)
                                 // 2. 'await' pauses the loop until this sentence is done speaking
                                 await puter.ai.txt2speech(trimmedSentence).then(audio=> {
                                     audio.play();
-                                    audio.onend = ()=> {
+                                    audio.onended = ()=> {
                                         num++;
                                         if(num < sentences.length){
                                             voicestory(newChapter, num);
