@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,23 +9,26 @@
     <script src="https://js.puter.com/v2/"></script>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="images/icon-192.png">
-    <meta name="theme-color" content="#374151"/>
+    <meta name="theme-color" content="#374151" />
     <style>
         body {
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+
         .story-content p {
             margin-bottom: 1rem;
             border-left: 3px solid #3b82f6;
             padding-left: 1rem;
         }
+
         .story-content p:first-child {
             margin-top: 1rem;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
     <div class="container mx-auto max-w-2xl p-4 sm:p-6 md:p-8">
@@ -36,9 +40,14 @@
         <main class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8">
             <!-- API Key Input -->
             <div id="apiKeySection" class="mb-6">
-                <label for="apiKey" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter Your Google AI API Key</label>
-                <input type="password" id="apiKey" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="••••••••••••••••••••••">
-                <p class="text-xs mt-2 text-gray-500 dark:text-gray-400">Your key is stored only in your browser. Get one from <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 hover:underline">Google AI Studio</a>.</p>
+                <label for="apiKey" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter Your
+                    Google AI API Key</label>
+                <input type="password" id="apiKey"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                    placeholder="••••••••••••••••••••••">
+                <p class="text-xs mt-2 text-gray-500 dark:text-gray-400">Your key is stored only in your browser. Get
+                    one from <a href="https://aistudio.google.com/app/apikey" target="_blank"
+                        class="text-blue-500 hover:underline">Google AI Studio</a>.</p>
             </div>
 
             <!-- Controls and Display -->
@@ -46,39 +55,49 @@
                 <div class="text-6xl font-bold text-gray-900 dark:text-white mb-2"><span id="distance">0.00</span></div>
                 <div class="text-lg text-gray-500 dark:text-gray-400">Miles Traveled</div>
             </div>
-            
+
             <!-- Journey Controls -->
             <div id="controls">
-                 <button id="startBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                <button id="startBtn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
                     Start New Journey
                 </button>
                 <div id="activeJourneyControls" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-                     <button id="pauseResumeBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300">
+                    <button id="pauseResumeBtn"
+                        class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300">
                         Pause Journey
                     </button>
-                    <button id="stopBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">
+                    <button id="stopBtn"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">
                         End Journey
                     </button>
                 </div>
             </div>
 
-             <!-- Status Message -->
+            <!-- Status Message -->
             <div id="statusMessage" class="text-center mt-4 text-sm text-gray-500 dark:text-gray-400 h-5"></div>
         </main>
 
         <!-- Story Output -->
         <section id="story-container" class="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 hidden">
             <div class="flex justify-between items-center mb-4">
-                 <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Your Adventure's Chronicle</h2>
-                 <button id="ttsToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <svg id="tts-icon-on" class="h-6 w-6 text-gray-600 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M8.75 3.75a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5a.75.75 0 000-1.5h-1.5v-1.5z" />
-                      <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM3.53 5.47a.75.75 0 00-1.06 1.06l1.06-1.06zM15.47 5.47a.75.75 0 10-1.06-1.06l1.06 1.06zM10 18a.75.75 0 000-1.5V18zm0-14.5a.75.75 0 000-1.5V3.5zM12.5 5a.75.75 0 000-1.5V5zm-5 0a.75.75 0 000-1.5V5zm-3.53 1.53a.75.75 0 001.06 0l-1.06-1.06zm9.06 0a.75.75 0 001.06 0l-1.06-1.06zM10 16.5a.75.75 0 000 1.5v-1.5zm-5-3a.75.75 0 000 1.5h10a.75.75 0 000-1.5H5z" />
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Your Adventure's Chronicle</h2>
+                <button id="ttsToggle"
+                    class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg id="tts-icon-on" class="h-6 w-6 text-gray-600 dark:text-gray-300"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M8.75 3.75a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5a.75.75 0 000-1.5h-1.5v-1.5z" />
+                        <path
+                            d="M10 2a8 8 0 100 16 8 8 0 000-16zM3.53 5.47a.75.75 0 00-1.06 1.06l1.06-1.06zM15.47 5.47a.75.75 0 10-1.06-1.06l1.06 1.06zM10 18a.75.75 0 000-1.5V18zm0-14.5a.75.75 0 000-1.5V3.5zM12.5 5a.75.75 0 000-1.5V5zm-5 0a.75.75 0 000-1.5V5zm-3.53 1.53a.75.75 0 001.06 0l-1.06-1.06zm9.06 0a.75.75 0 001.06 0l-1.06-1.06zM10 16.5a.75.75 0 000 1.5v-1.5zm-5-3a.75.75 0 000 1.5h10a.75.75 0 000-1.5H5z" />
                     </svg>
-                    <svg id="tts-icon-off" class="h-6 w-6 text-gray-600 dark:text-gray-300 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM5.22 6.22a.75.75 0 011.06 0L10 9.94l3.72-3.72a.75.75 0 111.06 1.06L11.06 11l3.72 3.72a.75.75 0 11-1.06 1.06L10 12.06l-3.72 3.72a.75.75 0 01-1.06-1.06L8.94 11 5.22 7.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                    <svg id="tts-icon-off" class="h-6 w-6 text-gray-600 dark:text-gray-300 hidden"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM5.22 6.22a.75.75 0 011.06 0L10 9.94l3.72-3.72a.75.75 0 111.06 1.06L11.06 11l3.72 3.72a.75.75 0 11-1.06 1.06L10 12.06l-3.72 3.72a.75.75 0 01-1.06-1.06L8.94 11 5.22 7.28a.75.75 0 010-1.06z"
+                            clip-rule="evenodd" />
                     </svg>
-                 </button>
+                </button>
             </div>
             <div id="story-output" class="prose prose-lg dark:prose-invert max-w-none story-content"></div>
         </section>
@@ -101,7 +120,7 @@
         const storyContainer = document.getElementById('story-container');
         const apiKeyInput = document.getElementById('apiKey');
         const statusMessage = document.getElementById('statusMessage');
-        
+
         const startBtn = document.getElementById('startBtn');
         const activeJourneyControls = document.getElementById('activeJourneyControls');
         const pauseResumeBtn = document.getElementById('pauseResumeBtn');
@@ -146,11 +165,11 @@
             if (!confirm("Are you sure you want to start a new journey? This will erase any previously saved journey.")) {
                 return;
             }
-            
+
             journeyState = JSON.parse(JSON.stringify(defaultJourneyState)); // Deep copy
             journeyState.isActive = true;
             journeyState.segmentStartTime = Date.now();
-            
+
             startTracking();
             updateUI();
         }
@@ -172,11 +191,11 @@
             if (watchId) navigator.geolocation.clearWatch(watchId);
             watchId = null;
             journeyState.isActive = false;
-            
+
             // Final story generation if needed
             const finalMiles = journeyState.totalDistance * 0.000621371;
             if (finalMiles > journeyState.lastMileMarker) {
-                 generateStory(true); // isFinalChapter = true
+                generateStory(true); // isFinalChapter = true
             }
 
             statusMessage.textContent = 'Journey complete! Story saved.';
@@ -199,18 +218,18 @@
             if (journeyState.isPaused) return;
 
             journeyState.positions.push([position.coords.latitude, position.coords.longitude]);
-            
+
             if (journeyState.positions.length > 1) {
                 const lastPos = journeyState.positions[journeyState.positions.length - 2];
                 const currentPos = journeyState.positions[journeyState.positions.length - 1];
                 journeyState.totalDistance += calculateDistance(lastPos[0], lastPos[1], currentPos[0], currentPos[1]);
             }
-            
+
             const currentMiles = journeyState.totalDistance * 0.000621371;
-            
+
             // Check if a new mile has been completed
             if (currentMiles >= journeyState.lastMileMarker + 0.5) {
-                journeyState.lastMileMarker+=0.5;
+                journeyState.lastMileMarker += 0.5;
                 generateStory(false); // isFinalChapter = false
             }
 
@@ -223,7 +242,7 @@
             statusMessage.textContent = `Error: ${error.message}.`;
             togglePauseResume(); // Auto-pause on error
         }
-        
+
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371e3; // meters
             const phi1 = lat1 * Math.PI / 180;
@@ -246,8 +265,8 @@
             const savedState = localStorage.getItem('journeyState');
             if (savedState) {
                 journeyState = JSON.parse(savedState);
-                if(journeyState.isActive){
-                    if(!journeyState.isPaused) {
+                if (journeyState.isActive) {
+                    if (!journeyState.isPaused) {
                         startTracking(); // Resume tracking if it was active
                     } else {
                         statusMessage.textContent = 'Paused journey loaded.';
@@ -260,13 +279,13 @@
             isTtsEnabled = localStorage.getItem('isTtsEnabled') !== 'false';
             updateUI();
         }
-        
+
         // --- UI Updates ---
-        
+
         function updateUI() {
             updateDistanceDisplay();
             renderStory();
-            
+
             if (journeyState.isActive) {
                 startBtn.classList.add('hidden');
                 activeJourneyControls.classList.remove('hidden');
@@ -286,7 +305,7 @@
                 activeJourneyControls.classList.add('hidden');
                 apiKeyInput.disabled = false;
             }
-            
+
             // Update TTS button icon
             if (isTtsEnabled) {
                 ttsIconOn.classList.remove('hidden');
@@ -296,12 +315,12 @@
                 ttsIconOff.classList.remove('hidden');
             }
         }
-        
+
         function updateDistanceDisplay() {
             const distanceInMiles = (journeyState.totalDistance || 0) * 0.000621371;
             distanceEl.textContent = distanceInMiles.toFixed(2);
         }
-        
+
         function renderStory() {
             if (journeyState.storyHistory && journeyState.storyHistory.length > 0) {
                 storyContainer.classList.remove('hidden');
@@ -316,7 +335,7 @@
             isTtsEnabled = !isTtsEnabled;
             localStorage.setItem('isTtsEnabled', isTtsEnabled);
             if (!isTtsEnabled) {
-                puter.ai.stop(); // Stop any currently playing speech
+                speechSynthesis.stop();
             }
             updateUI();
         }
@@ -325,12 +344,12 @@
         async function generateStory(isFinalChapter) {
             const apiKey = apiKeyInput.value.trim();
             if (!apiKey) return;
-            
+
             // Calculate speed for the last segment
             const segmentTime = (Date.now() - journeyState.segmentStartTime) / (1000 * 60 * 60); // hours
             const segmentDistance = (journeyState.totalDistance - journeyState.segmentStartDistance) * 0.000621371; // miles
             const speedMph = segmentTime > 0 ? (segmentDistance / segmentTime) : 0;
-            
+
             let speedDescription;
             if (speedMph < 2) speedDescription = "a very leisurely, wandering pace";
             else if (speedMph < 4) speedDescription = "a relaxed strolling pace";
@@ -346,7 +365,7 @@
             if (isFinalChapter) {
                 prompt = `You are a whimsical storyteller concluding an epic. The journey has just ended after ${distanceEl.textContent} miles. The final leg of the journey was at ${speedDescription}. Here is the story so far: "${currentStory}". Now, write one final, conclusive paragraph that beautifully wraps up the entire adventure.`;
             } else {
-                 prompt = `You are a whimsical storyteller continuing a saga. The journey has now reached ${chapterNumber} mile(s). The last mile was traveled at ${speedDescription}. Here is the story so far: "${currentStory}". Now, write the *chapter* (around 500-2000 words) for this adventure, describing what happens during mile ${chapterNumber}. Do not conclude the story.`;
+                prompt = `You are a whimsical storyteller continuing a saga. The journey has now reached ${chapterNumber} mile(s). The last mile was traveled at ${speedDescription}. Here is the story so far: "${currentStory}". Now, write the *chapter* (around 500-2000 words) for this adventure, describing what happens during mile ${chapterNumber}. Do not conclude the story.`;
             }
 
             // Reset for next segment
@@ -362,16 +381,15 @@
                 });
 
                 if (!response.ok) throw new Error((await response.json()).error.message);
-                
+
                 const data = await response.json();
                 const newChapter = data.candidates[0].content.parts[0].text;
                 journeyState.storyHistory.push(newChapter);
-                
+
                 if (isTtsEnabled) {
-                    puter.ai.txt2speech(newChapter)
-    .then((audio) => {
-        audio.play();
-    });
+                    var utterance = new SpeechSynthesisUtterance(newChapter);
+                    utterance.voice = "Google US English";
+                    speechSynthesis.speak(utterance);
                 }
 
                 saveJourneyToStorage();
@@ -385,5 +403,5 @@
         }
     </script>
 </body>
-</html>
 
+</html>
