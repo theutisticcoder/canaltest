@@ -405,7 +405,7 @@ voicestory(newChapter, 0)
         }
         async function voicestory(newChapter, num){
               if (isTtsEnabled) {
-                    const sentences = newChapter.match(/[^.!?]+[.!?]*\s*/g) || [];
+                    const sentences = newChapter.match(/[^\r\n]+/g) || [];
                 const sentence = sentences[num]
                             const trimmedSentence = sentence.trim();
                             if (trimmedSentence) {
