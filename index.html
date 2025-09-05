@@ -334,10 +334,15 @@
         function toggleTts() {
             isTtsEnabled = !isTtsEnabled;
             localStorage.setItem('isTtsEnabled', isTtsEnabled);
-            if (!isTtsEnabled) {
-                speechSynthesis.cancel();
-            }
+
             updateUI();
+        }
+        function splitStringByLength(str, length) {
+            const result = [];
+            for (let i = 0; i < str.length; i += length) {
+                result.push(str.slice(i, i + length));
+            }
+            return result;
         }
 
         // --- Google AI Gemini API Interaction ---
@@ -387,9 +392,12 @@
                 journeyState.storyHistory.push(newChapter);
 
                 if (isTtsEnabled) {
-                    var utterance = new SpeechSynthesisUtterance(newChapter);
-                    utterance.voice = speechSynthesis.getVoices().filter(v=>v.name === "Google US English")[0];
-                    speechSynthesis.speak(utterance);
+                    var strings = splitStringByLength(newChapter, 2500);
+                    strings.forEach(str => {
+                        puter.ai.txt2speech(str).then(audio=> {
+                            audio.play();
+                        })
+                    })
                 }
 
                 saveJourneyToStorage();
