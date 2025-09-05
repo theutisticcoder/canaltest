@@ -209,8 +209,8 @@
             const currentMiles = journeyState.totalDistance * 0.000621371;
             
             // Check if a new mile has been completed
-            if (currentMiles >= journeyState.lastMileMarker + 1) {
-                journeyState.lastMileMarker++;
+            if (currentMiles >= journeyState.lastMileMarker + 0.5) {
+                journeyState.lastMileMarker+=0.5;
                 generateStory(false); // isFinalChapter = false
             }
 
