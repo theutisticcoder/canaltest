@@ -1,55 +1,96 @@
-// Check for device motion support and secure context (HTTPS)
-if (window.DeviceMotionEvent && window.isSecureContext) {
-    let steps = 0;
-    let lastAcceleration = { x: null, y: null, z: null };
-    const threshold = 1.5; // Sensitivity for step detection (adjust as needed)
-    const strideLengthInFeet = 2.5; // Average adult male stride length in feet
+// Register the service worker for PWA functionality
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered!', reg))
+        .catch(err => console.error('Service Worker registration failed:', err));
+}
 
-    // Constants for conversion
-    const feetInMile = 5280;
-    const kmInMile = 1.609344;
-    const feetInKilometer = 3280.84;
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const distanceEl = document.getElementById('distance');
+const storyOutput = document.getElementById('story-output');
 
-    const stepsElement = document.getElementById('steps');
-    const milesElement = document.getElementById('miles');
-    const kilometersElement = document.getElementById('kilometers');
+let watchId = null;
+let totalDistance = 0; // in meters
+let positions = [];
 
-    // Function to update the display
-    function updateDisplay() {
-        // Calculate miles
-        const miles = (steps * strideLengthInFeet) / feetInMile;
+startBtn.addEventListener('click', () => {
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    totalDistance = 0;
+    positions = [];
+    storyOutput.innerHTML = '<p>Tracking has started...</p>';
 
-        // Calculate kilometers
-        const kilometers = miles * kmInMile;
-
-        // Update the HTML elements
-        stepsElement.textContent = steps;
-        milesElement.textContent = miles.toFixed(2); // Display 2 decimal places
-        kilometersElement.textContent = kilometers.toFixed(2);
-    }
-
-    // Event listener for device motion
-    window.addEventListener('devicemotion', (event) => {
-        const acceleration = event.accelerationIncludingGravity;
-        if (!lastAcceleration.x) {
-            lastAcceleration = acceleration;
-            return;
-        }
-
-        // Calculate the difference in acceleration since the last frame
-        const deltaX = Math.abs(acceleration.x - lastAcceleration.x);
-        const deltaY = Math.abs(acceleration.y - lastAcceleration.y);
-        const deltaZ = Math.abs(acceleration.z - lastAcceleration.z);
-
-        // Detect a step when a significant change in acceleration occurs
-        if (deltaX + deltaY + deltaZ > threshold) {
-            steps++;
-            updateDisplay();
-        }
-
-        lastAcceleration = acceleration;
+    watchId = navigator.geolocation.watchPosition(handlePosition, handleError, {
+        enableHighAccuracy: true
     });
-} else {
-    // Graceful degradation for unsupported or insecure browsers
-    alert("Device motion is not supported or the page is not served over HTTPS. Pedometer functionality will not work.");
+});
+
+stopBtn.addEventListener('click', () => {
+    if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+    }
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+
+    // Convert meters to miles for the story
+    const distanceInMiles = totalDistance * 0.000621371;
+    if (distanceInMiles > 0.01) { // Only generate if they moved a bit
+        generateStory(distanceInMiles);
+    } else {
+        storyOutput.innerHTML = '<p>You didn\'t travel far enough to generate a story.</p>';
+    }
+});
+
+function handlePosition(position) {
+    positions.push(position.coords);
+    if (positions.length > 1) {
+        const lastPos = positions[positions.length - 2];
+        const currentPos = positions[positions.length - 1];
+        totalDistance += calculateDistance(lastPos.latitude, lastPos.longitude, currentPos.latitude, currentPos.longitude);
+    }
+    // Update display in miles
+    distanceEl.textContent = (totalDistance * 0.000621371).toFixed(2);
+}
+
+function handleError(error) {
+    console.error('Geolocation error:', error);
+    storyOutput.innerHTML = `<p>Error: ${error.message}. Please enable location services.</p>`;
+}
+
+// Haversine formula to calculate distance between two lat/lon points
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // in meters
+}
+
+// Function to call our backend
+async function generateStory(distance) {
+    storyOutput.innerHTML = '<p>Crafting your story... ✨</p>';
+    try {
+        const response = await fetch('/generate-story', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ distance: distance.toFixed(2) })
+        });
+        const data = await response.json();
+        if (data.story) {
+            storyOutput.innerHTML = `<p>${data.story}</p>`;
+        } else {
+            throw new Error('No story returned.');
+        }
+    } catch (error) {
+        console.error('Error fetching story:', error);
+        storyOutput.innerHTML = '<p>Sorry, we couldn\'t generate a story right now. Please try again later.</p>';
+    }
 }

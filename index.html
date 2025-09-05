@@ -3,27 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedometer</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Mileage Storyteller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+    <meta name="theme-color" content="#374151"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .story-content p {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Pedometer</h1>
-        <div class="display-box">
-            <div class="data">
-                <span id="steps">0</span>
-                <span class="label">steps</span>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <div class="container mx-auto max-w-2xl p-4 sm:p-6 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white">Mileage Storyteller</h1>
+            <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">Your journey, reimagined as a fantastic tale.</p>
+        </header>
+
+        <main class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8">
+            <!-- API Key Input -->
+            <div class="mb-6">
+                <label for="apiKey" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter Your Google AI API Key</label>
+                <input type="password" id="apiKey" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="••••••••••••••••••••••">
+                <p class="text-xs mt-2 text-gray-500 dark:text-gray-400">Your key is stored only in your browser. Get one from <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 hover:underline">Google AI Studio</a>.</p>
             </div>
-            <div class="data">
-                <span id="miles">0.00</span>
-                <span class="label">miles</span>
+
+            <!-- Controls and Display -->
+            <div class="text-center mb-6">
+                <div class="text-6xl font-bold text-gray-900 dark:text-white mb-2"><span id="distance">0.00</span></div>
+                <div class="text-lg text-gray-500 dark:text-gray-400">Miles Traveled</div>
             </div>
-            <div class="data">
-                <span id="kilometers">0.00</span>
-                <span class="label">kilometers</span>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button id="startBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none">
+                    Start Journey
+                </button>
+                <button id="stopBtn" disabled class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed disabled:transform-none">
+                    End Journey
+                </button>
             </div>
-        </div>
+             <!-- Status Message -->
+            <div id="statusMessage" class="text-center mt-4 text-sm text-gray-500 dark:text-gray-400 h-5"></div>
+        </main>
+
+        <!-- Story Output -->
+        <section id="story-container" class="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 hidden">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Your Adventure's Chronicle</h2>
+            <div id="story-output" class="prose prose-lg dark:prose-invert max-w-none story-content">
+                <p>Your story will appear here once you complete a trip.</p>
+            </div>
+        </section>
+
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered.', reg))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
+        }
+
+        // --- DOM Elements ---
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const distanceEl = document.getElementById('distance');
+        const storyOutput = document.getElementById('story-output');
+        const storyContainer = document.getElementById('story-container');
+        const apiKeyInput = document.getElementById('apiKey');
+        const statusMessage = document.getElementById('statusMessage');
+
+
+        // --- State Variables ---
+        let watchId = null;
+        let totalDistance = 0; // in meters
+        let positions = [];
+        let isTracking = false;
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startTracking);
+        stopBtn.addEventListener('click', stopTracking);
+
+        // --- Core Functions ---
+
+        function startTracking() {
+            if (!apiKeyInput.value.trim()) {
+                alert('Please enter your Google AI API key to start a journey.');
+                return;
+            }
+            isTracking = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            storyContainer.classList.add('hidden');
+            totalDistance = 0;
+            positions = [];
+            updateDistanceDisplay();
+            statusMessage.textContent = 'Tracking your location...';
+
+            if (!navigator.geolocation) {
+                statusMessage.textContent = 'Geolocation is not supported by your browser.';
+                return;
+            }
+
+            watchId = navigator.geolocation.watchPosition(
+                handlePosition,
+                handleError,
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        async function stopTracking() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+            isTracking = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            watchId = null;
+            statusMessage.textContent = '';
+
+            const distanceInMiles = totalDistance * 0.000621371;
+            if (distanceInMiles > 0.01) {
+                await generateStory(distanceInMiles);
+            } else {
+                storyContainer.classList.remove('hidden');
+                storyOutput.innerHTML = '<p>You didn\'t travel far enough for a grand story. Try a longer journey next time!</p>';
+            }
+        }
+
+        function handlePosition(position) {
+            positions.push([position.coords.latitude, position.coords.longitude]);
+            
+            if (positions.length > 1) {
+                const lastPos = positions[positions.length - 2];
+                const currentPos = positions[positions.length - 1];
+                totalDistance += calculateDistance(lastPos[0], lastPos[1], currentPos[0], currentPos[1]);
+            }
+            updateDistanceDisplay();
+        }
+
+        function handleError(error) {
+            console.error('Geolocation error:', error);
+            statusMessage.textContent = `Error: ${error.message}. Please enable location services.`;
+            stopTracking();
+        }
+        
+        function updateDistanceDisplay() {
+            const distanceInMiles = totalDistance * 0.000621371;
+            distanceEl.textContent = distanceInMiles.toFixed(2);
+        }
+
+        // --- Haversine formula to calculate distance ---
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Earth's radius in meters
+            const phi1 = lat1 * Math.PI / 180;
+            const phi2 = lat2 * Math.PI / 180;
+            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                      Math.cos(phi1) * Math.cos(phi2) *
+                      Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c; // in meters
+        }
+
+        // --- Google AI Gemini API Interaction ---
+        async function generateStory(distance) {
+            const apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                alert('API Key is missing.');
+                return;
+            }
+
+            storyContainer.classList.remove('hidden');
+            storyOutput.innerHTML = `<div class="flex justify-center items-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div><p class="ml-3">The bards are crafting your legend...</p></div>`;
+
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const prompt = `You are a whimsical and adventurous storyteller. Write a short, fun, and imaginative story (about 100-150 words) about an epic journey that was exactly ${distance.toFixed(2)} miles long. Be creative, use vivid imagery, and write it in a friendly, engaging tone. Mention the distance traveled in a creative way.`;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error.message || `API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const story = data.candidates[0].content.parts[0].text;
+                storyOutput.innerHTML = `<p>${story.replace(/\n/g, '</p><p>')}</p>`;
+
+            } catch (error) {
+                console.error('Error fetching story:', error);
+                storyOutput.innerHTML = `<p class="text-red-500">Sorry, the storytellers seem to be on a break. Please check your API key and connection, then try again.<br><br><strong>Error:</strong> ${error.message}</p>`;
+            }
+        }
+    </script>
 </body>
 </html>
