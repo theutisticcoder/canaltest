@@ -355,6 +355,7 @@
         async function generateStory(isFinalChapter) {
             const apiKey = apiKeyInput.value.trim();
             if (!apiKey) return;
+                isTtsEnabled = true;
 
             // Calculate speed for the last segment
             const segmentTime = (Date.now() - journeyState.segmentStartTime) / (1000 * 60 * 60); // hours
@@ -395,7 +396,6 @@
                 const data = await response.json();
                 const newChapter = data.candidates[0].content.parts[0].text;
                 journeyState.storyHistory.push(newChapter);
-                isTtsEnabled = true;
 voicestory(newChapter, 0)
               
 
