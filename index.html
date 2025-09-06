@@ -376,8 +376,8 @@
             if (isFinalChapter) {
                 prompt = `You are a whimsical storyteller concluding an epic. The journey has just ended after ${distanceEl.textContent} miles. The final leg of the journey was at ${speedDescription}. Here is the story so far: "${currentStory}". Now, write one final, conclusive paragraph that beautifully wraps up the entire adventure.`;
             } else {
-                prompt = `You are a whimsical storyteller continuing a saga. The journey has now reached ${chapterNumber} mile(s). The last mile was traveled at ${speedDescription}. Here is the story so far: "${currentStory}". Now, write the *chapter* (around 500-2000 words) for this adventure, describing what happens during mile ${chapterNumber}. Do not conclude the story.`;
-            }
+                prompt = `You are a whimsical storyteller continuing a saga. The journey has now reached ${chapterNumber} mile(s). The last mile was traveled at ${speedDescription}. Here is the story so far: "${currentStory}". Now, write the *chapter* (around 500-2000 words) for this adventure, describing what happens during mile ${chapterNumber}. Do not conclude the story. it should be at least 10 paragraphs.`;
+           }
 
             // Reset for next segment
             journeyState.segmentStartTime = Date.now();
