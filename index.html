@@ -416,7 +416,7 @@ voicestory(newChapter, 0)
                             if (trimmedSentence) {
                                 console.log("Speaking:", trimmedSentence);
                                 // 2. 'await' pauses the loop until this sentence is done speaking
-                                await puter.ai.txt2speech(trimmedSentence, {voice: "Stephen", engine: "generative"}).then(audio=> {
+                                await puter.ai.txt2speech(trimmedSentence, {voice: "Matthew", engine: "generative"}).then(audio=> {
                                     storytalk = audio;
                                     storytalk.play();
                                     
