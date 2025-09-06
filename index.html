@@ -334,7 +334,12 @@
         function toggleTts() {
             isTtsEnabled = !isTtsEnabled;
             localStorage.setItem('isTtsEnabled', isTtsEnabled);
-
+            if(storytalk && !isTtsEnabled){
+                storytalk.pause();
+            }
+            else if(storytalk && isTtsEnabled){
+                storytalk.play();
+            }
             updateUI();
         }
         function splitStringByLength(str, length) {
@@ -362,7 +367,7 @@
             else if (speedMph < 15) speedDescription = "a swift running pace";
             else if (speedMph < 40) speedDescription = "the gentle speed of a cruising bicycle";
             else speedDescription = "the rapid pace of a traveler in a vehicle";
-
+            var storytalk;
             let prompt;
             const currentStory = journeyState.storyHistory.join(' ');
             const chapterNumber = journeyState.lastMileMarker;
@@ -412,8 +417,10 @@ voicestory(newChapter, 0)
                                 console.log("Speaking:", trimmedSentence);
                                 // 2. 'await' pauses the loop until this sentence is done speaking
                                 await puter.ai.txt2speech(trimmedSentence).then(audio=> {
-                                    audio.play();
-                                    audio.onended = ()=> {
+                                    storytalk = audio;
+                                    storytalk.play();
+                                    
+                                    storytalk.onended = ()=> {
                                         num++;
                                         if(num < sentences.length){
                                             voicestory(newChapter, num);
@@ -424,6 +431,7 @@ voicestory(newChapter, 0)
                             }
             }
         }
+        
     </script>
 </body>
 
